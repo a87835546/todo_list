@@ -74,5 +74,5 @@ func (us *UserCtl) OneDaySuggestion(ctx *gin.Context) {
 }
 
 func (us *UserCtl) GetSuggestion(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	RespOk(ctx, []models.User{})
 }
