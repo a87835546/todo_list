@@ -11,5 +11,6 @@ func main() {
 	http := router.InitRouter()
 	logic.InitDb()
 	logic.InitRedis()
+	logic.InitMongoDB()
 	http.Run(":8081")
 }

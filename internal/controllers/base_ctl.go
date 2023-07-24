@@ -128,6 +128,7 @@ const (
 	UpdateDBErrorCode      = 1002 // token err
 	ParameterErrorCode     = 1003 // param err
 	DeleteDBErrorCode      = 1004 // param err
+	QueryDBErrorCode       = 1005 // param err
 	LoginPasswordErrorCode = 2000 // param err
 	UnknownErrorCode       = 9999 // token err
 )
@@ -146,6 +147,7 @@ func ParserReqParameters[T Request](req *T, ctx *gin.Context) {
 	if err != nil {
 		log.Printf("解析参数异常--->>>%s\n ----->>> %#v", err.Error(), req)
 		RespError(ctx, ParameterErrorCode, "解析参数异常")
+		ctx.Done()
 	}
 }
 

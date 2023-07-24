@@ -9,27 +9,33 @@ import (
 )
 
 type Task struct {
-	Id              int64          `json:"id"`
-	UserId          int            `json:"user_id" gorm:"user_id"`
-	UserAccount     string         `json:"user_account" gorm:"user_account"`
-	CreatedAt       time.Time      `json:"created_at" gorm:"created_at"`
-	UpdatedAt       time.Time      `json:"updated_at" gorm:"updated_at"` // on update now()
-	Name            string         `json:"name"`
-	Type            int            `json:"type"` // 任务类型。
-	Status          int            `json:"status"`
-	StartDate       time.Time      `json:"start_date" gorm:"start_date"`
-	EndDate         time.Time      `json:"end_date" gorm:"end_date"`
-	DeadLineDate    time.Time      `json:"dead_line_date" gorm:"dead_line_date"`
-	OverallProgress int            `json:"overall_progress" gorm:"overall_progress"`
-	TaskIcon        *TaskIconModel `json:"task_icon" gorm:"task_icon" gorm:"type:json"`
-	Detail          string         `json:"detail"`
-	DetailNum       int            `json:"detail_num" gorm:"detail_num"`
+	Id              int64              `json:"id"`
+	UserId          int                `json:"user_id" gorm:"user_id"`
+	UserAccount     string             `json:"user_account" gorm:"user_account"`
+	CreatedAt       time.Time          `json:"created_at" gorm:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at" gorm:"updated_at"` // on update now()
+	Name            string             `json:"name"`
+	Type            int                `json:"type"` // 任务类型。
+	Status          int                `json:"status"`
+	StartDate       time.Time          `json:"start_date" gorm:"start_date"`
+	EndDate         time.Time          `json:"end_date" gorm:"end_date"`
+	DeadLineDate    time.Time          `json:"dead_line_date" gorm:"dead_line_date"`
+	OverallProgress int                `json:"overall_progress" gorm:"overall_progress"`
+	TaskIcon        string             `json:"-" gorm:"task_icon" gorm:"type:json" gorm:"embedded"`
+	TaskIconModel   TaskIconModel      `json:"task_icon" gorm:"-"`
+	Detail          string             `json:"-" gorm:"column:detail"`
+	DetailModel     []*TaskDetailModel `json:"detail" gorm:"-"`
+	DetailNum       int                `json:"detail_num" gorm:"detail_num"`
 }
 
+type TaskDetailModel struct {
+	TaskDetailName string `json:"taskDetailName"`
+	ItemProgress   int    `json:"itemProgress"`
+}
 type TaskIconModel struct {
-	TaskName string      `json:"taskName,omitempty"`
-	Icon     *IconModel  `json:"iconBean"`
-	Color    *ColorModel `json:"colorBean"`
+	TaskName string      `json:"taskName"`
+	Icon     *IconModel  `json:"iconBean" gorm:"embedded"`
+	Color    *ColorModel `json:"colorBean" gorm:"embedded"`
 }
 
 type IconModel struct {
@@ -37,7 +43,7 @@ type IconModel struct {
 	FontFamily         string `json:"fontFamily"`
 	FontPackage        string `json:"fontPackage"`
 	IconName           string `json:"iconName"`
-	MatchTextDirection bool   `json:"matchTextDirection"`
+	MatchTextDirection string `json:"matchTextDirection"`
 }
 
 type ColorModel struct {

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"todo_list/internal/logic"
 	"todo_list/internal/parameters"
 )
@@ -13,15 +14,14 @@ var tl *logic.TaskLogic
 
 func (tc *TaskCtl) Create(ctx *gin.Context) {
 	req := parameters.CreateReq{}
-	err := ctx.ShouldBindJSON(&req)
-	if err != nil {
-		RespError(ctx, ParameterErrorCode, "解析参数异常")
-	}
+	ParserReqParameters(&req, ctx)
+	log.Printf("req---->>>> %v", req)
 	task, err := tl.Create(&req)
 	if err != nil {
 		RespError(ctx, InsertDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, task)
 	}
-	RespOk(ctx, task)
 }
 
 func (tc *TaskCtl) Update(ctx *gin.Context) {
@@ -32,5 +32,14 @@ func (tc *TaskCtl) Delete(ctx *gin.Context) {
 	RespOk(ctx, nil)
 }
 func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
-	RespOk(ctx, nil)
+	mp := make(map[string]any, 0)
+	err := ctx.BindJSON(&mp)
+	id := mp["id"]
+
+	tasks, err := tl.QueryByUserId(id)
+	if err != nil {
+		RespError(ctx, QueryDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, tasks)
+	}
 }
