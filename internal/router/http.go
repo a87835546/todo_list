@@ -20,12 +20,11 @@ func InitRouter() *gin.Engine {
 	{
 		u := controllers.UserCtl{}
 		user.POST("/oneDaySuggestion", u.OneDaySuggestion)
-		user.POST("/getSuggestion", u.GetSuggestion)
+		user.GET("/getSuggestion", u.GetSuggestion)
 		user.POST("/login", u.Login)
 		user.POST("/updateUserName", u.UpdateUserName)
 		user.POST("/uploadAvatar", u.UploadAvatar)
 		user.POST("/identifyCodeSend", u.IdentifyCodeSend)
-		user.POST("/identifyCodeCheck", u.IdentifyCodeCheck)
 		user.POST("/register", u.Register)
 		user.POST("/resetPassword", u.ResetPassword)
 		user.POST("/forgetPassword", u.ForgetPassword)

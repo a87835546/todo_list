@@ -5,11 +5,13 @@ import (
 	"fmt"
 	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/jordan-wright/email"
 	"gorm.io/gorm"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
+	"net/smtp"
 	"os"
 	"os/exec"
 	"strings"
@@ -123,14 +125,17 @@ func generateToken(c *gin.Context, user *models.User) {
 }
 
 const (
-	TokenErrorCode         = 1000 // token err
-	InsertDBErrorCode      = 1001 // token err
-	UpdateDBErrorCode      = 1002 // token err
-	ParameterErrorCode     = 1003 // param err
-	DeleteDBErrorCode      = 1004 // param err
-	QueryDBErrorCode       = 1005 // param err
-	LoginPasswordErrorCode = 2000 // param err
-	UnknownErrorCode       = 9999 // token err
+	TokenErrorCode          = 1000 // token err
+	InsertDBErrorCode       = 1001 // token err
+	UpdateDBErrorCode       = 1002 // token err
+	ParameterErrorCode      = 1003 // param err
+	DeleteDBErrorCode       = 1004 // param err
+	QueryDBErrorCode        = 1005 // param err
+	UpdatePasswordErrorCode = 1006 // param err
+	SendOtpErrorCode        = 1007 // param err
+	OtpErrorCode            = 1008 // param err
+	LoginPasswordErrorCode  = 2000 // param err
+	UnknownErrorCode        = 9999 // token err
 )
 
 type Types interface {
@@ -139,7 +144,11 @@ type Types interface {
 }
 
 type Request interface {
-	gorm.Model | parameters.RegisterByEmailReq | parameters.CreateReq | parameters.LoginReq
+	gorm.Model | parameters.RegisterByEmailReq |
+		parameters.CreateReq | parameters.LoginReq |
+		parameters.InsertSuggestionReq | parameters.DeleteReq |
+		parameters.ModifyUsernameReq | parameters.ResetPasswordReq |
+		parameters.SendOTPReq | parameters.UpdateTaskReq
 }
 
 func ParserReqParameters[T Request](req *T, ctx *gin.Context) {
@@ -158,4 +167,36 @@ func GetRequestIP(c *gin.Context) string {
 		reqIP = "127.0.0.1"
 	}
 	return reqIP
+}
+func GenValidateCode(width int) string {
+	numeric := [10]byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	r := len(numeric)
+	rand.Seed(time.Now().UnixNano())
+
+	var sb strings.Builder
+	for i := 0; i < width; i++ {
+		fmt.Fprintf(&sb, "%d", numeric[rand.Intn(r)])
+	}
+	return sb.String()
+}
+func SendEmail(to string, otp string) {
+	em := email.NewEmail()
+	// 设置 sender 发送方 的邮箱 ， 此处可以填写自己的邮箱
+	em.From = "xx <xxx@qq.com>"
+
+	// 设置 receiver 接收方 的邮箱  此处也可以填写自己的邮箱， 就是自己发邮件给自己
+	em.To = []string{to}
+
+	// 设置主题
+	em.Subject = "小魔童给你发邮件了"
+
+	// 简单设置文件发送的内容，暂时设置成纯文本
+	em.Text = []byte("hello world， 咱们用 golang 发个邮件！！")
+
+	//设置服务器相关的配置
+	err := em.Send("smtp.qq.com:25", smtp.PlainAuth("", "自己的邮箱账号", "自己邮箱的授权码", "smtp.qq.com"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("send successfully ... ")
 }

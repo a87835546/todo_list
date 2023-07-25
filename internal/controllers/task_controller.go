@@ -25,11 +25,25 @@ func (tc *TaskCtl) Create(ctx *gin.Context) {
 }
 
 func (tc *TaskCtl) Update(ctx *gin.Context) {
-	RespOk(ctx, nil)
+	req := parameters.UpdateTaskReq{}
+	ParserReqParameters(&req, ctx)
+	err := tl.Update(&req)
+	if err != nil {
+		RespError(ctx, UpdateDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 
 func (tc *TaskCtl) Delete(ctx *gin.Context) {
-	RespOk(ctx, nil)
+	req := parameters.DeleteReq{}
+	ParserReqParameters(&req, ctx)
+	err := tl.Delete(&req)
+	if err != nil {
+		RespError(ctx, DeleteDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
 	mp := make(map[string]any, 0)

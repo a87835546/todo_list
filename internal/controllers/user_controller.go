@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"todo_list/internal/logic"
-	"todo_list/internal/models"
 	"todo_list/internal/parameters"
 )
 
@@ -18,7 +17,7 @@ func (us *UserCtl) Login(ctx *gin.Context) {
 	ParserReqParameters(&req, ctx)
 	log.Printf("req--->>> %s", req)
 	req.LoginIp = GetRequestIP(ctx)
-	user, err := ul.QueryByAccount(&req)
+	user, err := ul.QueryByAccount(req.Account)
 	if err != nil {
 		RespError(ctx, InsertDBErrorCode, err.Error())
 	} else if user.Password != req.Password {
@@ -33,19 +32,38 @@ func (us *UserCtl) Login(ctx *gin.Context) {
 }
 
 func (us *UserCtl) UpdateUserName(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.ModifyUsernameReq{}
+	ParserReqParameters(&req, ctx)
+	err := ul.UpdateUsernameById(&req)
+	if err != nil {
+		RespError(ctx, UpdateDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 
 func (us *UserCtl) UploadAvatar(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.ModifyUsernameReq{}
+	ParserReqParameters(&req, ctx)
+	err := ul.UpdateUsernameById(&req)
+	if err != nil {
+		RespError(ctx, UpdateDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 
 func (us *UserCtl) IdentifyCodeSend(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
-}
-
-func (us *UserCtl) IdentifyCodeCheck(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.SendOTPReq{}
+	ParserReqParameters(&req, ctx)
+	otp := GenValidateCode(6)
+	key := "otp:account:" + req.Account
+	err := logic.Client.Set(key, otp, 5*60*1000).Err()
+	if err != nil {
+		RespError(ctx, SendOtpErrorCode, err.Error())
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 
 func (us *UserCtl) Register(ctx *gin.Context) {
@@ -62,17 +80,55 @@ func (us *UserCtl) Register(ctx *gin.Context) {
 }
 
 func (us *UserCtl) ResetPassword(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.ResetPasswordReq{}
+	ParserReqParameters(&req, ctx)
+	user, err := ul.QueryByAccount(req.Account)
+	if user.Password != req.OldPassword {
+		RespError(ctx, UpdatePasswordErrorCode, "旧密码不匹配")
+	} else {
+		err = ul.UpdatePasswordById(&req)
+		if err != nil {
+			RespError(ctx, UpdateDBErrorCode, err.Error())
+		} else {
+			RespOk(ctx, nil)
+		}
+	}
 }
 
 func (us *UserCtl) ForgetPassword(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.ModifyUsernameReq{}
+	ParserReqParameters(&req, ctx)
+	key := "otp:account:" + req.Account
+	res, err := logic.Client.Get(key).Result()
+	if res != req.Token {
+		RespError(ctx, OtpErrorCode, "验证码异常")
+	} else {
+		err = ul.UpdateUsernameById(&req)
+		if err != nil {
+			RespError(ctx, UpdateDBErrorCode, err.Error())
+		} else {
+			RespOk(ctx, nil)
+		}
+	}
+
 }
 
 func (us *UserCtl) OneDaySuggestion(ctx *gin.Context) {
-	RespOk(ctx, models.User{})
+	req := parameters.InsertSuggestionReq{}
+	ParserReqParameters(&req, ctx)
+	err := ul.CreateSuggestion(&req)
+	if err != nil {
+		RespError(ctx, InsertDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, nil)
+	}
 }
 
 func (us *UserCtl) GetSuggestion(ctx *gin.Context) {
-	RespOk(ctx, []models.User{})
+	list, err := ul.QuerySuggestionByAccount(1)
+	if err != nil {
+		RespError(ctx, QueryDBErrorCode, err.Error())
+	} else {
+		RespOk(ctx, list)
+	}
 }

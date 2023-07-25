@@ -16,3 +16,40 @@ type CreateReq struct {
 	DetailList      string `json:"detailList" gorm:"column:detail"`
 	Token           string `json:"token" gorm:"-"`
 }
+
+type DeleteReq struct {
+	Token   string `json:"token"`
+	Account string `json:"account"`
+}
+
+type UpdateTaskReq struct {
+	TaskName        string `json:"taskName,omitempty" gorm:"column:name"`
+	TaskType        int    `json:"taskType,omitempty" gorm:"column:type"`
+	Account         string `json:"account,omitempty"`
+	TaskStatus      int    `json:"taskStatus,omitempty"`
+	TaskDetailNum   int    `json:"taskDetailNum,omitempty"`
+	OverallProgress int    `json:"overallProgress,omitempty" gorm:"column:overall_progress"`
+	ChangeTimes     string `json:"changeTimes,omitempty" gorm:"column:updated_at"`
+	FinishDate      string `json:"finishDate,omitempty" gorm:"column:end_date"`
+	StartDate       string `json:"startDate,omitempty" gorm:"column:start_date"`
+	Id              string `json:"uniqueId,omitempty"`
+	DeadLine        string `json:"deadLine,omitempty" gorm:"column:dead_line_date"`
+	TaskIconBean    string `json:"taskIconBean,omitempty" gorm:"column:task_icon"`
+	DetailList      string `json:"detailList,omitempty" gorm:"detail_list"`
+	Token           string `json:"token,omitempty" gorm:"-"`
+
+	//'taskName':taskBean.taskName,
+	//'taskType':taskBean.taskType,
+	//'account':taskBean.account,
+	//'taskStatus':'${taskBean.taskStatus}',
+	//'taskDetailNum':'${taskBean.taskDetailNum}',
+	//'overallProgress':'${taskBean.overallProgress}',
+	//'changeTimes':'${taskBean.changeTimes}',
+	//'finishDate':taskBean.finishDate,
+	//'startDate':taskBean.startDate,
+	//'uniqueId':taskBean.uniqueId,
+	//'deadLine':taskBean.deadLine,
+	//'taskIconBean':"",
+	//'detailList':"",
+	//'token':token,
+}

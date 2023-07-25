@@ -46,3 +46,11 @@ func (tl *TaskLogic) QueryByUserId(id any) (task []*models.Task, err error) {
 	}
 	return
 }
+func (tl *TaskLogic) Delete(req *parameters.DeleteReq) (err error) {
+	err = Db.Table("task").Delete("user_id=?", req.Account).Error
+	return
+}
+func (tl *TaskLogic) Update(req *parameters.UpdateTaskReq) (err error) {
+	err = Db.Table("task").Where("id=?", req.Id).Updates(req).Error
+	return
+}
