@@ -41,7 +41,7 @@ func (tl *UserLogic) CreateSuggestion(req *parameters.InsertSuggestionReq) (err 
 	log.Printf("插入数据异常-->>> %#v", err)
 	return
 }
-func (tl *UserLogic) QuerySuggestionByAccount(id int) (user *models.Suggestion, err error) {
-	err = Db.Table("suggestion").Where("user_id", id).Find(&user).Error
+func (tl *UserLogic) QuerySuggestionByAccount(id int) (list []*models.Suggestion, err error) {
+	err = Db.Table("suggestion").Where("user_id", id).Find(&list).Error
 	return
 }
