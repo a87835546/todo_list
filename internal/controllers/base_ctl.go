@@ -6,7 +6,6 @@ import (
 	jwtgo "github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/jordan-wright/email"
-	"gorm.io/gorm"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -144,7 +143,7 @@ type Types interface {
 }
 
 type Request interface {
-	gorm.Model | parameters.RegisterByEmailReq |
+	parameters.RegisterByEmailReq |
 		parameters.CreateReq | parameters.LoginReq |
 		parameters.InsertSuggestionReq | parameters.DeleteReq |
 		parameters.ModifyUsernameReq | parameters.ResetPasswordReq |
@@ -160,7 +159,7 @@ func ParserReqParameters[T Request](req *T, ctx *gin.Context) {
 	}
 }
 
-// 获取ip
+// GetRequestIP 获取ip
 func GetRequestIP(c *gin.Context) string {
 	reqIP := c.ClientIP()
 	if reqIP == "::1" {
