@@ -8,9 +8,16 @@ import (
 
 func main() {
 	log.Printf("main starting.....")
+
 	http := router.InitRouter()
 	logic.InitDb()
-	logic.InitRedis()
+	err := logic.InitRedis()
+	if err != nil {
+		return
+	}
 	logic.InitMongoDB()
-	http.Run(":8081")
+	err = http.Run(":8081")
+	if err != nil {
+		return
+	}
 }

@@ -17,10 +17,10 @@ import (
 
 const (
 	dbUser     string = "root"
-	dbPassword string = "123456"
+	dbPassword string = "12345678"
 	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
-	dbName     string = "todo"
+	dbName     string = "task"
 )
 
 var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)

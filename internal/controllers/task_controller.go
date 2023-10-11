@@ -46,7 +46,7 @@ func (tc *TaskCtl) Delete(ctx *gin.Context) {
 	}
 }
 func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
-	mp := make(map[string]any, 0)
+	mp := make(map[string]any)
 	err := ctx.BindJSON(&mp)
 	id := mp["id"]
 
