@@ -38,5 +38,24 @@ func InitRouter() *gin.Engine {
 		task.POST("/getTasks", t.GetAllByUserId)
 		task.POST("/deleteTask", t.Delete)
 	}
+
+	newUser := app.Group("user")
+	{
+		u := controllers.New()
+		newUser.GET("/query", u.Query)
+		newUser.POST("/login", u.Login)
+		newUser.POST("/register", u.Register)
+		newUser.POST("/resetPassword", u.ResetPassword)
+		newUser.POST("/forgetPassword", u.ForgetPassword)
+
+	}
+
+	newTask := app.Group("task")
+	{
+		t := controllers.TaskCtl{}
+		newTask.POST("/add", t.AddNewTask)
+		newTask.POST("/update", t.UpdateNew)
+
+	}
 	return app
 }

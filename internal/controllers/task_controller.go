@@ -57,3 +57,24 @@ func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
 		RespOk(ctx, tasks)
 	}
 }
+func (tc *TaskCtl) AddNewTask(ctx *gin.Context) {
+	req := parameters.CreateReq{}
+	ParserReqParameters(&req, ctx)
+	log.Printf("req---->>>> %v", req)
+	task, err := tl.Create(&req)
+	if err != nil {
+		RespError(ctx, InsertDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, task)
+	}
+}
+func (tc *TaskCtl) UpdateNew(ctx *gin.Context) {
+	req := parameters.NewUpdateTaskReq{}
+	ParserReqParameters(&req, ctx)
+	err := tl.NewUpdate(&req)
+	if err != nil {
+		RespError(ctx, UpdateDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, nil)
+	}
+}

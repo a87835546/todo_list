@@ -53,3 +53,6 @@ type UpdateTaskReq struct {
 	//'detailList':"",
 	//'token':token,
 }
+type NewUpdateTaskReq struct {
+	Id string `json:"uniqueId,omitempty"`
+}

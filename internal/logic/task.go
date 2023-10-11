@@ -54,3 +54,7 @@ func (tl *TaskLogic) Update(req *parameters.UpdateTaskReq) (err error) {
 	err = Db.Table("task").Where("id=?", req.Id).Updates(req).Error
 	return
 }
+func (tl *TaskLogic) NewUpdate(req *parameters.NewUpdateTaskReq) (err error) {
+	err = Db.Table("task").Where("id=?", req.Id).Updates(req).Error
+	return
+}

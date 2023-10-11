@@ -147,7 +147,8 @@ type Request interface {
 		parameters.CreateReq | parameters.LoginReq |
 		parameters.InsertSuggestionReq | parameters.DeleteReq |
 		parameters.ModifyUsernameReq | parameters.ResetPasswordReq |
-		parameters.SendOTPReq | parameters.UpdateTaskReq
+		parameters.SendOTPReq | parameters.UpdateTaskReq |
+		parameters.NewUpdateTaskReq
 }
 
 func ParserReqParameters[T Request](req *T, ctx *gin.Context) {
