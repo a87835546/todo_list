@@ -10,11 +10,13 @@ type UserModel struct {
 	Email       string `json:"email,omitempty"`
 	Password    string `json:"-"`
 	Avatar      string `json:"avatar,omitempty"`
-	LoginIp     string `json:"-"`
-	RegisterIp  string `json:"-"`
-	IsDelete    int    `json:"-"`
-	AccountType int    `json:"account_type,omitempty"`
-	DeviceType  int    `json:"device_type,omitempty"`
+	LoginIp     string `json:"-" gorm:"colum:login_ip"`
+	RegisterIp  string `json:"-" gorm:"colum:register_ip"`
+	IsDelete    int    `json:"-" gorm:"colum:is_delete"`
+	AccountType int    `json:"account_type" gorm:"colum:account_type"`
+	DeviceType  int    `json:"device_type" gorm:"colum:device_type"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
 	Time
 }
 

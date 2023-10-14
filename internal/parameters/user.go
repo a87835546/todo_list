@@ -1,20 +1,37 @@
 package parameters
 
+import "todo_list/internal/models"
+
 type RegisterByEmailReq struct {
-	Account      string `json:"account"`
-	Password     string `json:"password"`
-	AccountType  string `json:"accountType" gorm:"account_type"`
-	Username     string `json:"username"`
-	IdentifyCode string `json:"identifyCode" gorm:"-"`
+	Account      string `json:"account" binding:"required"`
+	Password     string `json:"password" binding:"required"`
+	AccountType  string `json:"accountType" gorm:"account_type" binding:"required"`
+	Username     string `json:"username" binding:"required"`
+	IdentifyCode string `json:"identifyCode" gorm:"-" binding:"required"`
 	RegisterIp   string `json:"-" gorm:"colum:register_ip"`
 }
 
+type RegisterReq struct {
+	Email        string `json:"email" binding:"required,email"`
+	Password     string `json:"password"`
+	AccountType  int    `json:"account_type" gorm:"account_type" binding:"required"`
+	FirstName    string `json:"first_name" binding:"required"`
+	LastName     string `json:"last_name" binding:"required"`
+	IdentifyCode string `json:"identify_code" gorm:"-"`
+	RegisterIp   string `json:"-" gorm:"colum:register_ip"`
+	CreatedAt    int64  `json:"-" gorm:"autoCreateTime"`
+	DeviceType   int    `json:"device_type" binding:"required"`
+}
 type LoginReq struct {
-	Account  string `json:"account"`
-	Password string `json:"password"`
+	Account  string `json:"account" binding:"required"`
+	Password string `json:"password" binding:"required"`
 	LoginIp  string `json:"-"`
 }
-
+type NewLoginReq struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	LoginIp  string `json:"-"`
+}
 type InsertSuggestionReq struct {
 	AvatarUrl  string `json:"avatar" gorm:"-"`
 	Account    string `json:"account" gorm:"column:user_id"`
@@ -52,4 +69,14 @@ type SendOTPReq struct {
 	//"account": widget.account??"",
 	//"why": widget.isForgetPassword??false ? "emailForget" : "emailRegister",
 	//"language": globalModel.currentLanguageCode[0]
+}
+
+type Request interface {
+	RegisterByEmailReq |
+		CreateReq | LoginReq |
+		InsertSuggestionReq | DeleteReq |
+		ModifyUsernameReq | ResetPasswordReq |
+		SendOTPReq | UpdateTaskReq |
+		NewUpdateTaskReq | RegisterReq | NewLoginReq |
+		models.TaskMode | models.TaskGroupModel
 }

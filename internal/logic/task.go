@@ -22,6 +22,19 @@ func (tl *TaskLogic) Create(req *parameters.CreateReq) (task *models.Task, err e
 	}
 	return
 }
+func (tl *TaskLogic) CreateNew(req *models.TaskMode) (task *models.TaskMode, err error) {
+	//one, err := MongoDB.Collection("task").InsertOne(context.Background(), req)
+	//if err != nil {
+	//	log.Println("err-->>", err.Error())
+	//	return nil, err
+	//}
+	//log.Println("one --->>>>", one)
+	err = Db.Table("task").Create(req).Error
+	if err == nil {
+		err = Db.Table("task").Where("id=?", req.Id).Find(&task).Error
+	}
+	return
+}
 func (tl *TaskLogic) QueryByUserId(id any) (task []*models.Task, err error) {
 	err = Db.Table("task").Where("user_id=?", id).Find(&task).Error
 	for i := 0; i < len(task); i++ {

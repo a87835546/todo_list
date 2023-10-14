@@ -20,7 +20,7 @@ const (
 	dbPassword string = "12345678"
 	dbHost     string = "127.0.0.1"
 	dbPort     int    = 3306
-	dbName     string = "task"
+	dbName     string = "todo"
 )
 
 var dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&loc=Local&parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
@@ -70,7 +70,6 @@ func InitRedis() error {
 	return nil
 }
 func connectDB() *gorm.DB {
-	var err error
 	fmt.Println("dsn : ", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{Logger: logger.Default.LogMode(logger.Info)})
 

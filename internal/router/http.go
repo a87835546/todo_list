@@ -43,7 +43,7 @@ func InitRouter() *gin.Engine {
 	{
 		u := controllers.New()
 		newUser.GET("/query", u.Query)
-		newUser.POST("/login", u.Login)
+		newUser.POST("/login", u.NewLogin)
 		newUser.POST("/register", u.Register)
 		newUser.POST("/resetPassword", u.ResetPassword)
 		newUser.POST("/forgetPassword", u.ForgetPassword)
@@ -57,5 +57,14 @@ func InitRouter() *gin.Engine {
 		newTask.POST("/update", t.UpdateNew)
 
 	}
+
+	ng := app.Group("taskgroup")
+	{
+		t := controllers.NewTaskGroupController()
+		ng.POST("/add", t.Add)
+		ng.POST("/update", t.Update)
+		ng.GET("/query", t.QueryByUserId)
+	}
+
 	return app
 }

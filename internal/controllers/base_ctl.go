@@ -71,15 +71,16 @@ type Result struct {
 func RespOk(ctx *gin.Context, data interface{}) {
 	//ctx.JSON(200, &Result{code: 200, message: "success", data: data})
 	ctx.JSON(200, gin.H{"code": 200, "message": "success", "data": data})
-	ctx.Next()
+	ctx.Done()
 }
 func RespError(ctx *gin.Context, code int, data interface{}) {
-	RespErrorWithMsg(ctx, code, "fail", data)
+	ctx.JSON(http.StatusInternalServerError, gin.H{"code": code, "message": "fail", "data": data})
+	ctx.Done()
 }
 
 func RespErrorWithMsg(ctx *gin.Context, code int, message string, data interface{}) {
 	ctx.JSON(200, gin.H{"code": code, "message": message, "data": data})
-	ctx.Next()
+	ctx.Done()
 }
 
 // 生成令牌
@@ -90,6 +91,46 @@ func generateToken(c *gin.Context, user *models.User) {
 
 	claims := doreamon.CustomClaims{
 		ID:   user.Id,
+		Name: user.Username,
+		StandardClaims: jwtgo.StandardClaims{
+			NotBefore: int64(time.Now().Unix() - 1000), // 签名生效时间
+			ExpiresAt: int64(time.Now().Unix() + 3600), // 过期时间 一小时
+			Issuer:    "newtrekWang",                   //签名的发行者
+		},
+	}
+
+	token, err := j.CreateToken(claims)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    -1,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	log.Println(token)
+	userData, _ := json.Marshal(user)
+	mp := make(map[string]any, 0)
+	json.Unmarshal(userData, &mp)
+	mp["token"] = token
+	c.JSON(http.StatusOK, gin.H{
+		"code":    200,
+		"message": "登录成功！",
+		"data":    mp,
+	})
+	key := fmt.Sprintf("user:%d:token", user.Id)
+	logic.Client.Set(key, token, 3600*time.Second)
+	return
+}
+
+func generateNewToken(c *gin.Context, user *models.UserModel) {
+	j := &doreamon.JWT{
+		SigningKey: []byte("newtrekWang"),
+	}
+
+	claims := doreamon.CustomClaims{
+		ID:   int(user.Time.Id),
 		Name: user.Username,
 		StandardClaims: jwtgo.StandardClaims{
 			NotBefore: int64(time.Now().Unix() - 1000), // 签名生效时间
@@ -142,22 +183,23 @@ type Types interface {
 		~uint16 | ~uint32 | ~uint64 | ~uintptr | ~float32 | ~float64
 }
 
-type Request interface {
-	parameters.RegisterByEmailReq |
-		parameters.CreateReq | parameters.LoginReq |
-		parameters.InsertSuggestionReq | parameters.DeleteReq |
-		parameters.ModifyUsernameReq | parameters.ResetPasswordReq |
-		parameters.SendOTPReq | parameters.UpdateTaskReq |
-		parameters.NewUpdateTaskReq
-}
-
-func ParserReqParameters[T Request](req *T, ctx *gin.Context) {
+func ParserReqParameters[T parameters.Request](req *T, ctx *gin.Context) {
 	err := ctx.ShouldBindJSON(req)
 	if err != nil {
 		log.Printf("解析参数异常--->>>%s\n ----->>> %#v", err.Error(), req)
 		RespError(ctx, ParameterErrorCode, "解析参数异常")
-		ctx.Done()
+	} else {
+		ctx.Next()
 	}
+}
+
+func ParserReq[T parameters.Request](req *T, ctx *gin.Context) error {
+	err := ctx.ShouldBindJSON(&req)
+	if err != nil {
+		log.Printf("解析参数异常--->>>%s\n ----->>> %#v", err.Error(), req)
+		//RespError(ctx, ParameterErrorCode, "解析参数异常")
+	}
+	return err
 }
 
 // GetRequestIP 获取ip

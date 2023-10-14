@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"todo_list/internal/logic"
+	"todo_list/internal/models"
 	"todo_list/internal/parameters"
 )
 
@@ -58,10 +59,10 @@ func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
 	}
 }
 func (tc *TaskCtl) AddNewTask(ctx *gin.Context) {
-	req := parameters.CreateReq{}
+	req := models.TaskMode{}
 	ParserReqParameters(&req, ctx)
 	log.Printf("req---->>>> %v", req)
-	task, err := tl.Create(&req)
+	task, err := tl.CreateNew(&req)
 	if err != nil {
 		RespError(ctx, InsertDBErrorCode, "db error")
 	} else {

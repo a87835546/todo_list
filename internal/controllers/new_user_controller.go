@@ -14,10 +14,10 @@ func New() *NewUserController {
 	return &NewUserController{}
 }
 
-func (c *NewUserController) Query(ctx *gin.Context) {
+func (us *NewUserController) Query(ctx *gin.Context) {
 	RespOk(ctx, nil)
 }
-func (c *NewUserController) Login(ctx *gin.Context) {
+func (us *NewUserController) Login(ctx *gin.Context) {
 	req := parameters.LoginReq{}
 	ParserReqParameters(&req, ctx)
 	log.Printf("req--->>> %s", req)
@@ -36,15 +36,43 @@ func (c *NewUserController) Login(ctx *gin.Context) {
 	}
 }
 func (us *NewUserController) Register(ctx *gin.Context) {
-	req := parameters.RegisterByEmailReq{}
-	ParserReqParameters(&req, ctx)
-	log.Printf("req--->>> %s", req)
-	req.RegisterIp = GetRequestIP(ctx)
-	user, err := ul.Create(&req)
+	req := parameters.RegisterReq{}
+	err := ParserReq(&req, ctx)
 	if err != nil {
-		RespError(ctx, InsertDBErrorCode, err.Error())
+		RespErrorWithMsg(ctx, ParameterErrorCode, "解析参数异常"+err.Error(), nil)
 	} else {
-		generateToken(ctx, user)
+		log.Printf("req--->>> %s", req)
+		req.RegisterIp = GetRequestIP(ctx)
+		user, err := ul.CreateAccount(&req)
+		if err != nil {
+			RespError(ctx, InsertDBErrorCode, err.Error())
+		} else {
+			generateNewToken(ctx, user)
+		}
+	}
+}
+
+func (us *NewUserController) NewLogin(ctx *gin.Context) {
+	req := parameters.NewLoginReq{}
+	err := ParserReq(&req, ctx)
+	if err != nil {
+		RespErrorWithMsg(ctx, ParameterErrorCode, "解析参数异常"+err.Error(), nil)
+	} else {
+		log.Printf("req--->>> %s", req)
+		req.LoginIp = GetRequestIP(ctx)
+		user, err := ul.QueryUserByEmail(req.Email)
+		if err != nil {
+			RespError(ctx, InsertDBErrorCode, err.Error())
+		} else {
+			if user.Password == req.Password {
+				user.LoginIp = GetRequestIP(ctx)
+				err = ul.Update(user)
+				if err != nil {
+					RespError(ctx, InsertDBErrorCode, err.Error())
+				}
+			}
+			generateNewToken(ctx, user)
+		}
 	}
 }
 
@@ -79,5 +107,14 @@ func (us *NewUserController) ForgetPassword(ctx *gin.Context) {
 			RespOk(ctx, nil)
 		}
 	}
-
+}
+func (us *NewUserController) GetOTPByEmail(ctx *gin.Context) {
+	email := ctx.Query("email")
+	key := "otp:account:" + email
+	res, err := logic.Client.Set(key, "", 5*60).Result()
+	if err != nil {
+		RespError(ctx, OtpErrorCode, err.Error())
+	} else {
+		RespOk(ctx, res)
+	}
 }

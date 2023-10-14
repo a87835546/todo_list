@@ -45,3 +45,25 @@ func (tl *UserLogic) QuerySuggestionByAccount(id int) (list []*models.Suggestion
 	err = Db.Table("suggestion").Where("user_id", id).Find(&list).Error
 	return
 }
+
+func (tl *UserLogic) CreateAccount(req *parameters.RegisterReq) (user *models.UserModel, err error) {
+	user, err = tl.QueryUserByEmail(req.Email)
+	if err == nil && user.Id > 0 {
+		return user, nil
+	} else {
+		err = Db.Debug().Table("user").Create(req).Error
+		log.Printf("插入数据异常-->>> %#v", err)
+		if err == nil {
+			user, err = tl.QueryUserByEmail(req.Email)
+		}
+	}
+	return
+}
+func (tl *UserLogic) QueryUserByEmail(email string) (user *models.UserModel, err error) {
+	err = Db.Debug().Table("user").Where("email=?", email).Find(&user).Error
+	return
+}
+func (tl *UserLogic) Update(user *models.UserModel) (err error) {
+	err = Db.Debug().Table("user").Updates(user).Error
+	return
+}
