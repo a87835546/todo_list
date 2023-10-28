@@ -78,5 +78,5 @@ type Request interface {
 		ModifyUsernameReq | ResetPasswordReq |
 		SendOTPReq | UpdateTaskReq |
 		NewUpdateTaskReq | RegisterReq | NewLoginReq |
-		models.TaskMode | models.TaskGroupModel
+		models.TaskModel | models.TaskGroupModel
 }

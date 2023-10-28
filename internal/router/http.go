@@ -12,10 +12,10 @@ func InitRouter() *gin.Engine {
 	app.Use(gin.Recovery())
 
 	test := app.Group("/test")
+	test.Use(middleware.TestMiddleware())
 	test.GET("/1", func(context *gin.Context) {
 		context.JSON(200, "test 1 success")
 	})
-
 	user := app.Group("fUser")
 	{
 		u := controllers.UserCtl{}

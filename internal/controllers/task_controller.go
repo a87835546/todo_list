@@ -59,9 +59,9 @@ func (tc *TaskCtl) GetAllByUserId(ctx *gin.Context) {
 	}
 }
 func (tc *TaskCtl) AddNewTask(ctx *gin.Context) {
-	req := models.TaskMode{}
+	req := models.TaskModel{}
 	ParserReqParameters(&req, ctx)
-	log.Printf("req---->>>> %v", req)
+	log.Printf("req---->>>> %#v", req)
 	task, err := tl.CreateNew(&req)
 	if err != nil {
 		RespError(ctx, InsertDBErrorCode, "db error")

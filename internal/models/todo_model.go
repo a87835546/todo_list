@@ -29,7 +29,7 @@ type TaskGroupModel struct {
 	Time
 }
 
-type TaskMode struct {
+type TaskModel struct {
 	UserId      int    `json:"user_id"`
 	Type        int    `json:"type"`
 	TaskGroupId int64  `json:"task_group_id"`

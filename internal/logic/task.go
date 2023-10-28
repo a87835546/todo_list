@@ -22,7 +22,7 @@ func (tl *TaskLogic) Create(req *parameters.CreateReq) (task *models.Task, err e
 	}
 	return
 }
-func (tl *TaskLogic) CreateNew(req *models.TaskMode) (task *models.TaskMode, err error) {
+func (tl *TaskLogic) CreateNew(req *models.TaskModel) (task *models.TaskModel, err error) {
 	//one, err := MongoDB.Collection("task").InsertOne(context.Background(), req)
 	//if err != nil {
 	//	log.Println("err-->>", err.Error())

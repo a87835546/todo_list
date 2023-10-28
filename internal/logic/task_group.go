@@ -14,7 +14,12 @@ func (TaskGroupService) QueryById(id int64) (model models.TaskGroupModel, err er
 }
 
 func (TaskGroupService) QueryByUserId(id int) (model []*models.TaskGroupModel, err error) {
-	err = Db.Table("task_group").Debug().Where("user_id=? ", []int{id, 0}).Find(&model).Error
+	var ids []int
+	if id > 0 {
+		ids = append(ids, id)
+	}
+	ids = append(ids, 0)
+	err = Db.Table("task_group").Debug().Where("user_id=? ", ids).Find(&model).Error
 	return
 }
 func (TaskGroupService) Add(model *models.TaskGroupModel) (err error) {
