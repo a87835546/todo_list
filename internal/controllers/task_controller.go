@@ -79,3 +79,23 @@ func (tc *TaskCtl) UpdateNew(ctx *gin.Context) {
 		RespOk(ctx, nil)
 	}
 }
+func (tc *TaskCtl) QueryTasksNew(ctx *gin.Context) {
+
+	userId := ctx.Query("user_id")
+	list, err := tl.QueryTasksNew(userId)
+	if err != nil {
+		RespError(ctx, QueryDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, list)
+	}
+}
+func (tc *TaskCtl) QueryTasksCountNew(ctx *gin.Context) {
+
+	userId := ctx.Query("user_id")
+	list, err := tl.QueryTasksCountNew(userId)
+	if err != nil {
+		RespError(ctx, QueryDBErrorCode, "db error")
+	} else {
+		RespOk(ctx, list)
+	}
+}

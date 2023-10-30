@@ -71,3 +71,11 @@ func (tl *TaskLogic) NewUpdate(req *parameters.NewUpdateTaskReq) (err error) {
 	err = Db.Table("task").Where("id=?", req.Id).Updates(req).Error
 	return
 }
+func (tl *TaskLogic) QueryTasksNew(userId any) (list []*models.TaskModel, err error) {
+	err = Db.Table("task").Where("user_id=?", userId).Find(&list).Error
+	return
+}
+func (tl *TaskLogic) QueryTasksCountNew(userId any) (list []*models.TaskCountModel, err error) {
+	err = Db.Table("task").Debug().Raw("select tmp.*,task_group.name,task_group.name_en,task_group.color,task_group.icon from(select count(task_group_id) as count,task_group_id from task group by task_group_id HAVING task_group_id in(select id from task_group where user_id in(?,0)))as tmp left join task_group on tmp.task_group_id=task_group.id", userId).Find(&list).Error
+	return
+}

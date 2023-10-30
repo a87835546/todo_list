@@ -30,6 +30,7 @@ type TaskGroupModel struct {
 }
 
 type TaskModel struct {
+	Id          int    `json:"id"`
 	UserId      int    `json:"user_id"`
 	Type        int    `json:"type"`
 	TaskGroupId int64  `json:"task_group_id"`
@@ -40,4 +41,13 @@ type TaskModel struct {
 	StartTime   int64  `json:"start_time"`
 	ProjectName string `json:"project_name"`
 	Time
+}
+
+type TaskCountModel struct {
+	Count  int    `json:"count"`
+	Id     int    `json:"task_group_id" gorm:"column:task_group_id"`
+	Name   string `json:"name"`
+	NameEn string `json:"name_en"`
+	Color  int64  `json:"color"`
+	Icon   string `json:"icon"`
 }

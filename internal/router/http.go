@@ -55,6 +55,8 @@ func InitRouter() *gin.Engine {
 		t := controllers.TaskCtl{}
 		newTask.POST("/add", t.AddNewTask)
 		newTask.POST("/update", t.UpdateNew)
+		newTask.GET("/list", t.QueryTasksNew)
+		newTask.GET("/count", t.QueryTasksCountNew)
 
 	}
 
