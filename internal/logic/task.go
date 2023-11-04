@@ -77,5 +77,18 @@ func (tl *TaskLogic) QueryTasksNew(userId any) (list []*models.TaskModel, err er
 }
 func (tl *TaskLogic) QueryTasksCountNew(userId any) (list []*models.TaskCountModel, err error) {
 	err = Db.Table("task").Debug().Raw("select tmp.*,task_group.name,task_group.name_en,task_group.color,task_group.icon from(select count(task_group_id) as count,task_group_id from task group by task_group_id HAVING task_group_id in(select id from task_group where user_id in(?,0)))as tmp left join task_group on tmp.task_group_id=task_group.id", userId).Find(&list).Error
+	var temp []*models.TaskModel
+	err = Db.Table("task").Debug().Raw("select *\nfrom task\nwhere task_group_id in (select id from task_group where user_id in (?,0))", userId).Find(&temp).Error
+	if err == nil {
+		for i := 0; i < len(list); i++ {
+			m := list[i]
+			for j := 0; j < len(temp); j++ {
+				m1 := temp[j]
+				if m.Id == m1.TaskGroupId {
+					m.Tasks = append(m.Tasks, m1)
+				}
+			}
+		}
+	}
 	return
 }

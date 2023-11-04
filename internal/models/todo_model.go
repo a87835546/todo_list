@@ -44,10 +44,12 @@ type TaskModel struct {
 }
 
 type TaskCountModel struct {
-	Count  int    `json:"count"`
-	Id     int    `json:"task_group_id" gorm:"column:task_group_id"`
-	Name   string `json:"name"`
-	NameEn string `json:"name_en"`
-	Color  int64  `json:"color"`
-	Icon   string `json:"icon"`
+	Count   int          `json:"count"`
+	Id      int64        `json:"task_group_id" gorm:"column:task_group_id"`
+	Name    string       `json:"name"`
+	NameEn  string       `json:"name_en"`
+	Color   int64        `json:"color"`
+	Icon    string       `json:"icon"`
+	Process uint         `json:"process" gorm:"-"`
+	Tasks   []*TaskModel `json:"tasks" gorm:"-"`
 }
